@@ -61,6 +61,12 @@ test {
 
 test {
 	my @l = ('$test', '$test');
+	my @m = $r->replace(@l);
+	@l ~~ ['$test', '$test'];
+};
+
+test {
+	my @l = ('$test', '$test');
 	$r->replace(@l);
 	@l ~~ ['quoi', 'quoi'];
 };
@@ -83,4 +89,12 @@ failwith {
 	my @l = $r->replace('$test', $a);
 	1
 } 'FailedScalar';
+
+test {
+	replace('test', 'test' => 'quoi', 'quoi' => 'test') eq 'quoi'
+};
+
+test {
+	replace('test', 'quoi' => 'test', 'test' => 'quoi') eq 'quoi'
+};
 

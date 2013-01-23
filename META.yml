@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               String-Replace
-version:            0.01
+version:            0.02
 abstract:           Performs arbitrary replacement in strings
 author:
     - Mathias Kende <mathias@cpan.org>

@@ -1,5 +1,5 @@
 package String::Replace;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use strict;
 use warnings;
 use Exporter 'import';
@@ -69,6 +69,17 @@ sub __execute_replace {
 	return $str;
 }
 
+sub __execute_replace_in {
+	my (undef, $repl) = @_;
+
+	for my $e (@{$repl}) {
+		my ($re, $v) = @{$e};
+		$_[0] =~ s/$re/$v/g;
+	}
+
+	return;
+}
+
 
 sub new {
 	my ($class, @param) = @_;
@@ -95,7 +106,7 @@ sub __replace_method {
 	} elsif (defined wantarray) {
 		return @_ ? __execute_replace($_[0], $repl) : undef;
 	} else {
-		$_ = __execute_replace($_, $repl) for @_;
+		__execute_replace_in($_, $repl) for @_;
 		return;
 	}
 }
@@ -328,7 +339,7 @@ Mathias Kende (mathias@cpan.org)
 
 =head1 VERSION
 
-Version 0.01 (January 2013)
+Version 0.02 (January 2013)
 
 =head1 COPYRIGHT & LICENSE
 

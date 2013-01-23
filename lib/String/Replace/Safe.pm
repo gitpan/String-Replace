@@ -1,5 +1,5 @@
 package String::Replace::Safe;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use strict;
 use warnings;
 use Exporter 'import';
@@ -9,6 +9,10 @@ use Carp;
 
 our @EXPORT_OK = ('replace', 'unreplace');
 our %EXPORT_TAGS = ('all' => [ @EXPORT_OK ] );
+
+# There is a lot of code duplication between String::Replace and
+# String::Replace::Safe, but I don't see a simple way to reduce it without
+# adding a additionnal indirection level.
 
 sub __prepare_replace {
 	my %param;
@@ -59,9 +63,18 @@ sub __prepare_unreplace {
 sub __execute_replace {
 	my ($str, $repl) = @_;
 	
-	return $str =~ s/$repl->{regexp}/$repl->{replace}{$1}/gre;
+	$str =~ s/$repl->{regexp}/$repl->{replace}{$1}/ge;
+	#return $str =~ s/$repl->{regexp}/$repl->{replace}{$1}/gre; require v5.14
 
 	return $str;
+}
+
+sub __execute_replace_in {
+	my (undef, $repl) = @_;
+
+	$_[0] =~ s/$repl->{regexp}/$repl->{replace}{$1}/ge;
+
+	return;
 }
 
 sub new {
@@ -89,7 +102,7 @@ sub __replace_method {
 	} elsif (defined wantarray) {
 		return @_ ? __execute_replace($_[0], $repl) : undef;
 	} else {
-		$_ = __execute_replace($_, $repl) for @_;
+		__execute_replace_in($_, $repl) for @_;
 		return;
 	}
 }
@@ -152,7 +165,7 @@ String::Replace::Safe - Performs arbitrary replacement in strings, safely
 C<String::Replace::Safe> is a safe version of the C<L<String::Replace>> library.
 That is that this version does not depend on the order of evaluation of the
 argument to its function. This version is also consistently slower than the I<unsafe>
-version (by a factor of approximately 50%.
+version (by a factor of approximately 50%).
 
 Apart from that, the interface of the safe version is exactly the same (both
 functionnal and object oriented) as the interface of the C<L<String::Replace>>
@@ -169,7 +182,7 @@ Mathias Kende (mathias@cpan.org)
 
 =head1 VERSION
 
-Version 0.01 (January 2013)
+Version 0.02 (January 2013)
 
 =head1 COPYRIGHT & LICENSE
 
